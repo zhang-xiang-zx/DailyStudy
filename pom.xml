@@ -8,11 +8,12 @@
     <artifactId>DailyStudy</artifactId>
     <version>1.0-SNAPSHOT</version>
 
-<!--    springboot依赖-->
+    <!--    springboot依赖-->
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>2.7.17</version>
+        <!--        <relativePath/>-->
     </parent>
 
     <properties>
@@ -32,6 +33,51 @@
             <artifactId>fastjson2</artifactId>
             <version>2.0.52</version>
         </dependency>
+
+        <!-- https://mvnrepository.com/artifact/io.netty/netty-all -->
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-all</artifactId>
+            <version>4.1.77.Final</version>
+        </dependency>
+
+        <!-- lombok -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <!--配置海康sdk所需要的;<systemPath>${project.basedir}/lib/jna.jar</systemPath>-->
+        <dependency>
+            <groupId>com.sun.jna</groupId>
+            <artifactId>jna</artifactId>
+            <version>1.0</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/hikLib/jna.jar</systemPath>
+        </dependency>
+
+        <!--配置海康sdk所需要的;<systemPath>${project.basedir}/lib/examples.jar</systemPath>-->
+        <dependency>
+            <groupId>com.sun.jna.example</groupId>
+            <artifactId>examples</artifactId>
+            <version>1.0</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/hikLib/examples.jar</systemPath>
+        </dependency>
+
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <includeSystemScope>true</includeSystemScope>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>
