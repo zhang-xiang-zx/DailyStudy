@@ -74,6 +74,10 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
+                <!--
+                设置为true时，表示当使用spring-boot-maven-plugin插件来构建应用时，将会包含那些被声明为<scope>system</scope>的依赖
+                system范围的依赖是通过文件系统路径指定的依赖，而不是从Maven仓库下载的。
+                -->
                     <includeSystemScope>true</includeSystemScope>
                 </configuration>
             </plugin>

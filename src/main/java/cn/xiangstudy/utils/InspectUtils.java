@@ -66,7 +66,7 @@ public class InspectUtils {
     }
 
     /**
-     * @description: 判断对象中带有不能为空的注解的字段是否为空
+     * @description: 判断对象中带有不能为空的注解的字段是否不为空
      * @author: zhangxiang
      * @date: 2024/9/9 14:02
      * @param: [obj, objClass]
@@ -94,5 +94,20 @@ public class InspectUtils {
 
         return notNull;
     }
+
+    /**
+     * @description: 判断字符串中是否包含另一个字符串
+     * @author: zhangxiang
+     * @date: 2024/10/12 10:42
+     * @param: [originStr, otherStr]
+     * @return: boolean
+     */
+    public static boolean strIsHave(String originStr, String otherStr){
+        if(isNull(originStr) && isNull(otherStr)){
+            return false;
+        }
+        return originStr.contains(otherStr);
+    }
+
 }
 
