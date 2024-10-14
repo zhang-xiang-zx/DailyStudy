@@ -4,11 +4,14 @@ import cn.xiangstudy.service.FileService;
 import cn.xiangstudy.utils.DateUtils;
 import cn.xiangstudy.utils.InspectUtils;
 import org.springframework.core.io.Resource;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Date;
 
 /**
@@ -42,6 +45,22 @@ public class FileServiceImpl implements FileService {
             e.printStackTrace();
         }
         return "success";
+    }
+
+    @Override
+    public ResponseEntity<byte[]> downloadFile(String fileName){
+        try{
+            String uploadFilePath = System.getProperty("user.dir") + "\\uploadFile\\";
+            File file = new File(uploadFilePath + fileName);
+            byte[] data = Files.readAllBytes(file.toPath());
+            return ResponseEntity.ok()
+                    .header("Content-Disposition","attachment; filename=\"" + fileName + "\"")
+                    .header("Content-Length", String.valueOf(data.length))
+                    .body(data);
+        }catch (IOException e){
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
     }
 }
 

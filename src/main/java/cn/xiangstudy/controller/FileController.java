@@ -2,9 +2,8 @@ package cn.xiangstudy.controller;
 
 import cn.xiangstudy.service.FileService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
@@ -21,6 +20,11 @@ public class FileController {
     @PostMapping("/upload")
     public String uploadFile(MultipartFile file){
         return fileService.uploadFile(file);
+    }
+
+    @GetMapping("/download")
+    public ResponseEntity<byte[]> downloadFile(@RequestParam("fileName") String fileName){
+        return fileService.downloadFile(fileName);
     }
 }
 

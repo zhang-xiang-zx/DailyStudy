@@ -1,5 +1,6 @@
 package cn.xiangstudy.service;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
@@ -16,4 +17,6 @@ public interface FileService {
      * @return: void
      */
     String uploadFile(MultipartFile file);
+
+    ResponseEntity<byte[]> downloadFile(String fileName);
 }
