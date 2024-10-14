@@ -18,6 +18,9 @@ public class FileUtils {
      * @return: java.lang.String
      */
     public static String read(String filePath) throws IOException{
+        if(!isFile(filePath)){
+            throw new RuntimeException("非文件，无法读取");
+        }
         File file = new File(filePath);
         InputStreamReader inputStreamReader = new InputStreamReader(Files.newInputStream(file.toPath()), StandardCharsets.UTF_8);
         BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
@@ -39,6 +42,9 @@ public class FileUtils {
      * @return: void
      */
     public static boolean write(String filePath, String content) throws IOException{
+        if(!isFile(filePath)){
+            throw new RuntimeException("非文件，无法写入");
+        }
         File file = new File(filePath);
         FileOutputStream fileOutputStream = new FileOutputStream(file);
         BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(fileOutputStream,StandardCharsets.UTF_8));
@@ -47,6 +53,30 @@ public class FileUtils {
         bufferedWriter.close();
         fileOutputStream.close();
         return true;
+    }
+
+    /**
+     * @description: 判断是否是文件
+     * @author: zhangxiang
+     * @date: 2024/10/14 16:19
+     * @param: [filePath]
+     * @return: boolean
+     */
+    public static boolean isFile(String filePath){
+        File file = new File(filePath);
+        return file.isFile();
+    }
+
+    /**
+     * @description: 判断是否是文件夹
+     * @author: zhangxiang
+     * @date: 2024/10/14 16:21
+     * @param: [filePath]
+     * @return: boolean
+     */
+    public static boolean isDirectory(String filePath){
+        File file = new File(filePath);
+        return file.isDirectory();
     }
 
 }
