@@ -1,4 +1,4 @@
-package cn.xiangstudy.controller;
+package cn.xiangstudy.controller.file;
 
 import cn.xiangstudy.service.FileService;
 import org.springframework.beans.factory.annotation.Autowired;
