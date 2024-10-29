@@ -69,6 +69,14 @@
             <version>3.13.6</version>
         </dependency>
 
+        <!-- 串口调试 -->
+        <dependency>
+            <groupId>com.fazecast</groupId>
+            <artifactId>jSerialComm</artifactId>
+            <version>2.10.4</version>
+        </dependency>
+
+
 
         <!--配置海康sdk所需要的;<systemPath>${project.basedir}/lib/jna.jar</systemPath>-->
         <dependency>
