@@ -1,7 +1,5 @@
 package cn.xiangstudy.utils;
 
-import cn.xiangstudy.pojo.Student;
-import cn.xiangstudy.pojo.Teacher;
 import org.springframework.cglib.beans.BeanCopier;
 
 import java.util.ArrayList;
