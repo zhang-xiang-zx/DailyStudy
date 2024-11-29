@@ -15,17 +15,16 @@ public class FirstRunRobot {
     private static volatile Integer sum = 0;
     private static volatile List<Integer> robotIds = new ArrayList<>();
     private static volatile Map<String, String> map = new HashMap<>();
-
+    private static volatile Integer size;
     public static void main(String[] args) {
         init();
-        int size = robotIds.size();
         ThreadPoolExecutor threadPoolExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(5);
         ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1);
         Runnable task = () -> {
             System.out.println("完成台数：" + sum);
             System.out.println("未完成台数：" + size);
             System.out.println("正在执行机器：" + robotIds);
-            if (sum == size) {
+            if (sum.equals(size)) {
                 System.out.println("全部执行完毕");
                 running = false;
             }
@@ -33,12 +32,15 @@ public class FirstRunRobot {
                 for (int robotId : robotIds) {
                     threadPoolExecutor.submit(() -> firstRun(robotId));
                 }
+            }else {
+                threadPoolExecutor.shutdown();
+                scheduledExecutorService.shutdown();
             }
         };
 
         // 任务
         scheduledExecutorService.scheduleAtFixedRate(task, 0, 1, TimeUnit.MINUTES);
-
+        // 关闭
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             scheduledExecutorService.shutdown();
             threadPoolExecutor.shutdown();
@@ -60,6 +62,7 @@ public class FirstRunRobot {
         robotIds.add(111);
         robotIds.add(112);
         robotIds.add(113);
+        size = robotIds.size();
         for (int robotId : robotIds) {
             map.put(String.valueOf(robotId), "0");
         }
@@ -69,7 +72,6 @@ public class FirstRunRobot {
         String oldLocation = map.get(String.valueOf(robotId));
         String newLocation = currentLocation(robotId);
         try {
-            System.out.println(robotId + " 正在执行");
             stop(robotId);
             Thread.sleep(5000);
             right(robotId);
@@ -80,11 +82,13 @@ public class FirstRunRobot {
                 if (result == 0) {
 //                    sum++;
                     count();
-                    robotIds.remove(Integer.valueOf(robotId));
-                    System.out.println(robotId + " 已经执行完毕");
+//                    robotIds.remove(Integer.valueOf(robotId));
+                    del(robotId);
+                    delSize();
                 }
             }
-            map.put(String.valueOf(robotId), newLocation);
+            put(String.valueOf(robotId), newLocation);
+//            map.put(String.valueOf(robotId), newLocation);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
@@ -107,10 +111,25 @@ public class FirstRunRobot {
     }
 
     private static String currentLocation(int robotId) {
+        if(robotId == 111) {
+            return "0";
+        }
         return "15000";
     }
 
     private synchronized static void count() {
         sum++;
+    }
+
+    private synchronized static void del(int robotId) {
+        robotIds.remove(Integer.valueOf(robotId));
+    }
+
+    private synchronized static void put(String key, String value) {
+        map.put(key, value);
+    }
+
+    private synchronized static void delSize() {
+        size--;
     }
 }
