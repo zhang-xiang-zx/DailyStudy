@@ -1,6 +1,10 @@
 package cn.xiangstudy.nong;
 
+import cn.hutool.http.HttpResponse;
+import cn.hutool.http.HttpUtil;
 import cn.xiangstudy.utils.DateUtils;
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONObject;
 
 import java.util.*;
 import java.util.concurrent.*;
@@ -11,10 +15,11 @@ import java.util.concurrent.*;
  * @date 2024-11-29 09:58
  */
 public class FirstRunRobot {
+    static String tokenValue = "gCtaYle1AH7Xjrr7Caf4pcDfDJPVcZmSfJp02EdiKUc19ewPeJlLDlrlHubSSkVpPYhek1MglnnM8HbSwXzbaCcytuv/sUr9SbtV0YJTSiew46VSMI2aK2x3Qdr2j9XeKa9yIS/ASr54XO8keeJKzg==";
     private static volatile boolean running = true;
     private static volatile Integer sum = 0;
     private static volatile List<Integer> robotIds = new ArrayList<>();
-    private static volatile Map<String, String> map = new HashMap<>();
+    private static volatile Map<String, Integer> map = new HashMap<>();
     private static volatile Integer size;
     public static void main(String[] args) {
         init();
@@ -39,7 +44,7 @@ public class FirstRunRobot {
         };
 
         // 任务
-        scheduledExecutorService.scheduleAtFixedRate(task, 0, 1, TimeUnit.MINUTES);
+        scheduledExecutorService.scheduleAtFixedRate(task, 0, 2, TimeUnit.MINUTES);
         // 关闭
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             scheduledExecutorService.shutdown();
@@ -59,27 +64,27 @@ public class FirstRunRobot {
     }
 
     private static void init() {
-        robotIds.add(111);
-        robotIds.add(112);
-        robotIds.add(113);
+        robotIds.add(246);
+        robotIds.add(248);
+        robotIds.add(249);
         size = robotIds.size();
         for (int robotId : robotIds) {
-            map.put(String.valueOf(robotId), "0");
+            map.put(String.valueOf(robotId), 0);
         }
     }
 
     private static void firstRun(int robotId) {
-        String oldLocation = map.get(String.valueOf(robotId));
-        String newLocation = currentLocation(robotId);
+        Integer oldLocation = map.get(String.valueOf(robotId));
+        Integer newLocation = currentLocation(robotId);
         try {
             stop(robotId);
             Thread.sleep(5000);
             right(robotId);
-            if (!oldLocation.equals("0")) {
+            if (oldLocation != 0) {
                 Long lOld = Long.valueOf(oldLocation);
                 Long lNew = Long.valueOf(newLocation);
-                Long result = lOld - lNew;
-                if (result == 0) {
+                Long result = lNew - lOld;
+                if (result < 2000) {
 //                    sum++;
                     count();
 //                    robotIds.remove(Integer.valueOf(robotId));
@@ -96,11 +101,17 @@ public class FirstRunRobot {
 
 
     private static void stop(int robotId) {
+        HttpResponse execute = HttpUtil.createGet("http://cloud.fznft.com/mgr/orbitalRobot/stop?orbitalRobotId=" + robotId)
+                .header("Token", tokenValue)
+                .execute();
         String s = DateUtils.dateToStr(new Date(), "yyyy-MM-dd HH:mm:ss");
         System.out.println(robotId + "号：" + s + " stop");
     }
 
     private static void right(int robotId) {
+        HttpResponse execute = HttpUtil.createGet("http://cloud.fznft.com/mgr/orbitalRobot/right?orbitalRobotId=" + robotId + "&speed=10")
+                .header("Token", tokenValue)
+                .execute();
         String s = DateUtils.dateToStr(new Date(), "yyyy-MM-dd HH:mm:ss");
         System.out.println(robotId + "号：" + s + " right");
     }
@@ -110,11 +121,23 @@ public class FirstRunRobot {
         System.out.println(robotId + "号：" + s + " left");
     }
 
-    private static String currentLocation(int robotId) {
-        if(robotId == 111) {
-            return "0";
+    private static Integer currentLocation(int robotId) {
+        Integer result = null;
+        HttpResponse execute = HttpUtil.createGet("http://cloud.fznft.com/mgr/orbitalRobot/distance?orbitalRobotId=" + robotId)
+                .header("Token", tokenValue)
+                .execute();
+
+        String body = execute.body();
+
+        JSONObject jsonObject = JSON.parseObject(body);
+        String o = String.valueOf(jsonObject.get("data"));
+        JSONObject jsonObject1 = JSON.parseObject(o);
+        String isOk = jsonObject1.getString("isOk");
+        if (isOk.equals("true")) {
+            result = jsonObject1.getInteger("distance");
         }
-        return "15000";
+        System.out.println(robotId + "机器人当前脉冲位置：" + result);
+        return result;
     }
 
     private synchronized static void count() {
@@ -125,7 +148,7 @@ public class FirstRunRobot {
         robotIds.remove(Integer.valueOf(robotId));
     }
 
-    private synchronized static void put(String key, String value) {
+    private synchronized static void put(String key, Integer value) {
         map.put(key, value);
     }
 
