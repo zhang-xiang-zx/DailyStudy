@@ -8,19 +8,23 @@ import com.alibaba.fastjson2.JSONObject;
 
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * 机器人跑全场
+ *
  * @author zhangxiang
  * @date 2024-11-29 09:58
  */
 public class FirstRunRobot {
     static String tokenValue = "gCtaYle1AH7Xjrr7Caf4pcDfDJPVcZmSfJp02EdiKUc19ewPeJlLDlrlHubSSkVpPYhek1MglnnM8HbSwXzbaCcytuv/sUr9SbtV0YJTSiew46VSMI2aK2x3Qdr2j9XeKa9yIS/ASr54XO8keeJKzg==";
     private static volatile boolean running = true;
-    private static volatile Integer sum = 0;
+    private static Integer sum = 0;
     private static volatile List<Integer> robotIds = new ArrayList<>();
-    private static volatile Map<String, Integer> map = new HashMap<>();
-    private static volatile Integer size;
+    private static ConcurrentHashMap<String, Integer> map = new ConcurrentHashMap<>();
+    private static Integer size;
+    private static final ReentrantLock lock = new ReentrantLock();
+
     public static void main(String[] args) {
         init();
         ThreadPoolExecutor threadPoolExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(5);
@@ -37,7 +41,7 @@ public class FirstRunRobot {
                 for (int robotId : robotIds) {
                     threadPoolExecutor.submit(() -> firstRun(robotId));
                 }
-            }else {
+            } else {
                 threadPoolExecutor.shutdown();
                 scheduledExecutorService.shutdown();
             }
@@ -46,21 +50,21 @@ public class FirstRunRobot {
         // 任务
         scheduledExecutorService.scheduleAtFixedRate(task, 0, 2, TimeUnit.MINUTES);
         // 关闭
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            scheduledExecutorService.shutdown();
-            threadPoolExecutor.shutdown();
-            try {
-                if (!scheduledExecutorService.awaitTermination(1, TimeUnit.MINUTES) ||
-                        !threadPoolExecutor.awaitTermination(1, TimeUnit.MINUTES)) {
-                    scheduledExecutorService.shutdownNow();
-                    threadPoolExecutor.shutdownNow();
-                }
-            } catch (Exception e) {
-                scheduledExecutorService.shutdownNow();
-                threadPoolExecutor.shutdownNow();
-                Thread.currentThread().interrupt();
-            }
-        }));
+//        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+//            scheduledExecutorService.shutdown();
+//            threadPoolExecutor.shutdown();
+//            try {
+//                if (!scheduledExecutorService.awaitTermination(1, TimeUnit.MINUTES) ||
+//                        !threadPoolExecutor.awaitTermination(1, TimeUnit.MINUTES)) {
+//                    scheduledExecutorService.shutdownNow();
+//                    threadPoolExecutor.shutdownNow();
+//                }
+//            } catch (Exception e) {
+//                scheduledExecutorService.shutdownNow();
+//                threadPoolExecutor.shutdownNow();
+//                Thread.currentThread().interrupt();
+//            }
+//        }));
     }
 
     private static void init() {
@@ -85,15 +89,10 @@ public class FirstRunRobot {
                 Long lNew = Long.valueOf(newLocation);
                 Long result = lNew - lOld;
                 if (result < 2000) {
-//                    sum++;
-                    count();
-//                    robotIds.remove(Integer.valueOf(robotId));
-                    del(robotId);
-                    delSize();
+                    end(robotId);
                 }
             }
             put(String.valueOf(robotId), newLocation);
-//            map.put(String.valueOf(robotId), newLocation);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
@@ -140,19 +139,15 @@ public class FirstRunRobot {
         return result;
     }
 
-    private synchronized static void count() {
-        sum++;
-    }
-
-    private synchronized static void del(int robotId) {
-        robotIds.remove(Integer.valueOf(robotId));
-    }
-
-    private synchronized static void put(String key, Integer value) {
+    private static void put(String key, Integer value) {
         map.put(key, value);
     }
 
-    private synchronized static void delSize() {
+    private static void end(int robotId) {
+        lock.lock();
+        sum++;
+        robotIds.remove(Integer.valueOf(robotId));
         size--;
+        lock.unlock();
     }
 }
