@@ -47,7 +47,7 @@ public class Robot {
 
     private void log(String msg) {
         String str = DateUtils.dateToStr(new Date(), "yyyy-MM-dd HH:mm:ss");
-        System.out.printf("%s %s", str, msg);
+        System.out.printf("%s %s\n", str, msg);
     }
 
 
@@ -134,6 +134,11 @@ public class Robot {
             setLocation(robotID, newLocation, num);
             log(String.format("%s 设置定位点%d,脉冲:%d", robotID, num, newLocation));
         }
+    }
+
+    public void restart(){
+        RobotRequest.get(String.format("mgr/orbitalRobot/restart?orbitalRobotId=%s", robotID));
+        log(String.format("%s 重启", robotID));
     }
 
     private static void setLocation(int robotId, Integer distance, Integer num) {
