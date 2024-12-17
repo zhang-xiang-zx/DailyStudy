@@ -25,7 +25,7 @@ import java.util.concurrent.locks.ReentrantLock;
 @Slf4j
 public class FirstRunRobot2 {
 
-    public final static String tokenValue = "gCtaYle1AH7Xjrr7Caf4pcDfDJPVcZmSfJp02EdiKUc19ewPeJlLDlrlHubSSkVpPYhek1MglnnM8HbSwXzbaCcytuv/sUr9SbtV0YJTSiew46VSMI2aK2x3Qdr2j9XeKa9yIS/ASr54XO8keeJKzg==";
+    public final static String tokenValue = "gCtaYle1AH7Xjrr7Caf4pa9sbbXuODPhsAPlPrFjHb67TwB8i752LYLepZTX8qiiVjSyQyMR1v2cMFEKcKDjuil3PvJwT/UDFAREJH1bzYoa0SdGPn3mUpFGY2UXlLKnN4nzLWVgIOU1VQLRfMhoAg==";
 
     public static void main(String[] args) throws InterruptedException {
 
@@ -131,7 +131,7 @@ public class FirstRunRobot2 {
         String body = get(String.format("mgr/orbitalRobot/distance?orbitalRobotId=%s", robotId));
         JSONObject response = JSON.parseObject(body);
         JSONObject data = response.getJSONObject("data");
-        if (data.getBoolean("isOK")) {
+        if (data.getBoolean("isOk")) {
             result = data.getInteger("distance");
         }
         return result;

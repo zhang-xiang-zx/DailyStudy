@@ -21,12 +21,12 @@ import java.util.concurrent.CountDownLatch;
 public class SetLocation2 {
     private static final String URL = "http://cloud.fznft.com";
     private static final Integer SPEED = 8;
-    private static final String TOKEN = "gCtaYle1AH7Xjrr7Caf4pcDfDJPVcZmSfJp02EdiKUc19ewPeJlLDlrlHubSSkVpPYhek1MglnnM8HbSwXzbaCcytuv/sUr9SbtV0YJTSiew46VSMI2aK2x3Qdr2j9XeKa9yIS/ASr54XO8keeJKzg==";
+    private static final String TOKEN = "gCtaYle1AH7Xjrr7Caf4pa9sbbXuODPhsAPlPrFjHb67TwB8i752LYLepZTX8qiiVjSyQyMR1v2cMFEKcKDjuil3PvJwT/UDFAREJH1bzYoa0SdGPn3mUpFGY2UXlLKnN4nzLWVgIOU1VQLRfMhoAg==";
     private static Map<Integer, Long> locationMap = new ConcurrentHashMap<>();
 
 
     public static void main(String[] args) throws InterruptedException {
-        List<Integer> robotIds = Lists.newArrayList(220);
+        List<Integer> robotIds = Lists.newArrayList(231,232,233,234,194,195,196,197);
         CountDownLatch countDownLatch = new CountDownLatch(robotIds.size());
         Stopwatch stopwatch = Stopwatch.createStarted();
 
@@ -34,7 +34,8 @@ public class SetLocation2 {
             new Thread(() -> {
                 try {
                     log(String.format("%s 开始任务", robotId));
-                    single(robotId);
+//                    single(robotId);
+                    singleStop(robotId);
                     locationMap.remove(robotId);
                     countDownLatch.countDown();
                     log(String.format("%s 结束任务", robotId));
@@ -56,10 +57,6 @@ public class SetLocation2 {
 //            });
 //        }
 //        executorService.shutdown();
-    }
-
-    private static void init() {
-
     }
 
     private static void single(int robotId) throws InterruptedException {
@@ -103,6 +100,14 @@ public class SetLocation2 {
             setLocation(robotId, currentLocation, num++);
             locationMap.put(robotId, currentLocation);
         }
+    }
+
+    private static void singleStop(int robotId) throws InterruptedException {
+        stop(robotId);
+        Thread.sleep(2000);
+        stop(robotId);
+        Thread.sleep(1000);
+        left(robotId);
     }
 
     private static String get(String url) {
